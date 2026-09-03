@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGRISHIELD — Crop & Pest Intelligence</title>
+  <!-- Tailwind CSS CDN (No Installation Required) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+  <!-- TOP NAV -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="text-2xl">🛡️</span>
+        <div>
+          <h1 class="font-bold text-xl text-emerald-400 tracking-wide">AGRISHIELD</h1>
+          <p class="text-xs text-slate-400">Early Crop Disease & Pest Management Platform</p>
+        </div>
+      </div>
+      <span class="px-3 py-1 text-xs rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 animate-pulse">
+        ● IoT Telemetry Active
+      </span>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-8">
+
+    <!-- KPI STAT CARDS -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <p class="text-xs text-slate-400 font-medium">MONITORED ACRES</p>
+        <p class="text-2xl font-bold text-white mt-1">1,420 Ha</p>
+        <p class="text-xs text-emerald-400 mt-2">↑ 18 Nodes Connected</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <p class="text-xs text-slate-400 font-medium">ACTIVE OUTBREAK ALERTS</p>
+        <p class="text-2xl font-bold text-rose-400 mt-1">3 Critical</p>
+        <p class="text-xs text-rose-300 mt-2">Immediate intervention</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <p class="text-xs text-slate-400 font-medium">AVG FIELD HUMIDITY</p>
+        <p class="text-2xl font-bold text-amber-400 mt-1" id="kpiHum">78%</p>
+        <p class="text-xs text-amber-300 mt-2">Fungal threshold warning</p>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <p class="text-xs text-slate-400 font-medium">PREVENTATIVE SAVINGS</p>
+        <p class="text-2xl font-bold text-emerald-400 mt-1">94.2%</p>
+        <p class="text-xs text-slate-400 mt-2">Estimated crop yield loss</p>
+      </div>
+    </section>
+
+    <!-- LIVE RISK SIMULATOR FOR JUDGES -->
+    <section class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+      <div class="border-b border-slate-800 pb-4 mb-6">
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>🧪</span> Live Agronomic Outbreak Simulator
+        </h2>
+        <p class="text-xs text-slate-400">Slide environmental parameters to demonstrate predictive risk classification in real time.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Sliders -->
+        <div class="space-y-5">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-300">Ambient Temperature (°C)</span>
+              <span class="font-bold text-emerald-400" id="tempVal">26°C</span>
+            </div>
+            <input type="range" id="temp" min="15" max="42" value="26" class="w-full accent-emerald-500 cursor-pointer" oninput="runPredictor()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-300">Relative Humidity (%)</span>
+              <span class="font-bold text-emerald-400" id="humVal">82%</span>
+            </div>
+            <input type="range" id="hum" min="30" max="100" value="82" class="w-full accent-emerald-500 cursor-pointer" oninput="runPredictor()">
+          </div>
+
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-300">Leaf Wetness Duration (Hours)</span>
+              <span class="font-bold text-emerald-400" id="wetVal">9 hrs</span>
+            </div>
+            <input type="range" id="wet" min="0" max="18" value="9" class="w-full accent-emerald-500 cursor-pointer" oninput="runPredictor()">
+          </div>
+        </div>
+
+        <!-- Outcome Card -->
+        <div class="bg-slate-950 border border-slate-800 rounded-lg p-5 flex flex-col justify-between">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Calculated Threat Index</span>
+            <div class="text-4xl font-extrabold mt-1" id="riskScore">76 / 100</div>
+            <div class="mt-3 inline-block px-3 py-1 rounded text-xs font-bold" id="badge">
+              🚨 HIGH RISK: Fungal Spore & Pest Outbreak
+            </div>
+            <p class="text-xs text-slate-300 mt-4 leading-relaxed" id="prescription">
+              Microclimate is optimal for rapid fungal colonization (Late Blight). Immediate spray of biological fungicide recommended within 12 hours.
+            </p>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2.5 mt-4">
+            <div id="riskBar" class="bg-rose-500 h-2.5 rounded-full" style="width: 76%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHARTS ROW -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <h3 class="font-semibold text-sm text-slate-300 mb-4">Pest & Fungal Infestation by Crop</h3>
+        <canvas id="cropChart" height="200"></canvas>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl">
+        <h3 class="font-semibold text-sm text-slate-300 mb-4">Environmental Risk Telemetry (24h)</h3>
+        <canvas id="telemetryChart" height="200"></canvas>
+      </div>
+    </section>
+
+    <!-- DATASET TABLE -->
+    <section class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+      <h3 class="font-semibold text-sm text-slate-300 mb-3">Field Node Telemetry Log (AGRISHIELD Dataset)</h3>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-800/60 uppercase text-slate-400 border-b border-slate-700">
+            <tr>
+              <th class="py-3 px-4">Node ID</th>
+              <th class="py-3 px-4">Crop</th>
+              <th class="py-3 px-4">Temp</th>
+              <th class="py-3 px-4">Humidity</th>
+              <th class="py-3 px-4">Detected Threat</th>
+              <th class="py-3 px-4">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr>
+              <td class="py-3 px-4 font-mono text-emerald-400">SHIELD-101</td>
+              <td class="py-3 px-4">Tomato</td>
+              <td class="py-3 px-4">26.5°C</td>
+              <td class="py-3 px-4">86%</td>
+              <td class="py-3 px-4 text-rose-400 font-semibold">Late Blight (Fungal)</td>
+              <td class="py-3 px-4"><span class="bg-rose-950 text-rose-300 px-2 py-0.5 rounded border border-rose-800">Critical</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-emerald-400">SHIELD-102</td>
+              <td class="py-3 px-4">Rice</td>
+              <td class="py-3 px-4">31.0°C</td>
+              <td class="py-3 px-4">79%</td>
+              <td class="py-3 px-4 text-amber-400 font-semibold">Brown Planthopper</td>
+              <td class="py-3 px-4"><span class="bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">Moderate</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-emerald-400">SHIELD-103</td>
+              <td class="py-3 px-4">Maize</td>
+              <td class="py-3 px-4">24.2°C</td>
+              <td class="py-3 px-4">52%</td>
+              <td class="py-3 px-4 text-emerald-400 font-semibold">Healthy</td>
+              <td class="py-3 px-4"><span class="bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">Normal</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-mono text-emerald-400">SHIELD-104</td>
+              <td class="py-3 px-4">Cotton</td>
+              <td class="py-3 px-4">33.5°C</td>
+              <td class="py-3 px-4">74%</td>
+              <td class="py-3 px-4 text-amber-400 font-semibold">Pink Bollworm (Pest)</td>
+              <td class="py-3 px-4"><span class="bg-amber-950 text-amber-300 px-2 py-0.5 rounded border border-amber-800">Moderate</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Predictive logic simulation
+    function runPredictor() {
+      const temp = parseFloat(document.getElementById('temp').value);
+      const hum = parseFloat(document.getElementById('hum').value);
+      const wet = parseFloat(document.getElementById('wet').value);
+
+      document.getElementById('tempVal').innerText = temp + '°C';
+      document.getElementById('humVal').innerText = hum + '%';
+      document.getElementById('wetVal').innerText = wet + ' hrs';
+
+      // Calculation formula
+      let score = (hum * 0.4) + (wet * 2.5) + (temp >= 22 && temp <= 29 ? 15 : 5);
+      score = Math.min(Math.round(score), 100);
+
+      const scoreEl = document.getElementById('riskScore');
+      const badge = document.getElementById('badge');
+      const presc = document.getElementById('prescription');
+      const bar = document.getElementById('riskBar');
+
+      scoreEl.innerText = score + ' / 100';
+      bar.style.width = score + '%';
+
+      if (score >= 68) {
+        scoreEl.className = 'text-4xl font-extrabold mt-1 text-rose-400';
+        badge.className = 'mt-3 inline-block px-3 py-1 rounded text-xs font-bold bg-rose-950 text-rose-300 border border-rose-800';
+        badge.innerText = '🚨 HIGH RISK: Rapid Pathogen Colonization';
+        presc.innerText = 'Microclimate is optimal for fungal spore germination and pest feeding. Trigger targeted bio-fungicide or pheromone traps immediately.';
+        bar.className = 'bg-rose-500 h-2.5 rounded-full';
+      } else if (score >= 45) {
+        scoreEl.className = 'text-4xl font-extrabold mt-1 text-amber-400';
+        badge.className = 'mt-3 inline-block px-3 py-1 rounded text-xs font-bold bg-amber-950 text-amber-300 border border-amber-800';
+        badge.innerText = '⚠️ MODERATE RISK: Early Warning Active';
+        presc.innerText = 'Moderate humidity detected. Inspect leaf undersides for aphid colonies and reduce evening overhead irrigation.';
+        bar.className = 'bg-amber-500 h-2.5 rounded-full';
+      } else {
+        scoreEl.className = 'text-4xl font-extrabold mt-1 text-emerald-400';
+        badge.className = 'mt-3 inline-block px-3 py-1 rounded text-xs font-bold bg-emerald-950 text-emerald-300 border border-emerald-800';
+        badge.innerText = '✅ OPTIMAL CONDITIONS: Stable Canopy';
+        presc.innerText = 'Microclimate is hostile to major pest colonies. Continue standard precision drip irrigation schedule.';
+        bar.className = 'bg-emerald-500 h-2.5 rounded-full';
+      }
+    }
+
+    // Chart.js Graphs
+    window.addEventListener('load', () => {
+      // Bar Chart
+      new Chart(document.getElementById('cropChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Tomato', 'Rice', 'Maize', 'Cotton', 'Wheat'],
+          datasets: [{
+            label: 'Reported Infestations',
+            data: [38, 27, 19, 31, 14],
+            backgroundColor: '#10B981'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8' } },
+            x: { ticks: { color: '#94A3B8' } }
+          }
+        }
+      });
+
+      // Line Chart
+      new Chart(document.getElementById('telemetryChart'), {
+        type: 'line',
+        data: {
+          labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+          datasets: [
+            { label: 'Humidity (%)', data: [85, 92, 78, 60, 68, 82], borderColor: '#38BDF8', tension: 0.3 },
+            { label: 'Temp (°C)', data: [22, 20, 25, 33, 31, 26], borderColor: '#F59E0B', tension: 0.3 }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#94A3B8' } } },
+          scales: {
+            y: { grid: { color: '#1E293B' }, ticks: { color: '#94A3B8' } },
+            x: { ticks: { color: '#94A3B8' } }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
